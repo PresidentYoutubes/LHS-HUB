@@ -1,0 +1,178 @@
+--// Services
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+--// Destroy previous GUI
+if CoreGui:FindFirstChild("Ref3Zen") then CoreGui.Ref3Zen:Destroy() end
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui", CoreGui)
+gui.Name = "Ref3Zen"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 250, 0, 340)
+frame.Position = UDim2.new(0.5, -125, 0.5, -170)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local uicorner = Instance.new("UICorner", frame)
+uicorner.CornerRadius = UDim.new(0, 12)
+
+--// Function to create buttons
+local function createButton(name, yPos, callback)
+	local btn = Instance.new("TextButton", frame)
+	btn.Size = UDim2.new(0.9, 0, 0, 30)
+	btn.Position = UDim2.new(0.05, 0, 0, yPos)
+	btn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	btn.Text = name
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.TextColor3 = Color3.fromRGB(0, 170, 255)
+	btn.AutoButtonColor = true
+	btn.BorderSizePixel = 0
+
+	local corner = Instance.new("UICorner", btn)
+	corner.CornerRadius = UDim.new(0, 8)
+
+	btn.MouseButton1Click:Connect(callback)
+end
+
+--// Function to create toggle
+local function createToggle(yPos)
+	local toggle = Instance.new("TextButton", frame)
+	toggle.Size = UDim2.new(0.9, 0, 0, 30)
+	toggle.Position = UDim2.new(0.05, 0, 0, yPos)
+	toggle.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	toggle.Text = "Auto Buy Best: OFF"
+	toggle.Font = Enum.Font.Gotham
+	toggle.TextSize = 14
+	toggle.TextColor3 = Color3.fromRGB(0, 170, 255)
+	toggle.BorderSizePixel = 0
+
+	local corner = Instance.new("UICorner", toggle)
+	corner.CornerRadius = UDim.new(0, 8)
+
+	local running = false
+	local thread
+
+	toggle.MouseButton1Click:Connect(function()
+		running = not running
+		toggle.Text = "Auto Buy Best: " .. (running and "ON" or "OFF")
+
+		if running then
+			thread = task.spawn(function()
+				while running do
+					local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+					local items = {
+						{Event = "BuyGearStock", Arg = "Master Sprinkler"},
+						{Event = "BuyPetEgg", Arg = "Bug Egg"},
+						{Event = "BuyPetEgg", Arg = "Paradise Egg"},
+						{Event = "BuyPetEgg", Arg = "Mythic Egg"},
+						{Event = "BuySeedStock", Arg = "Giant Pinecon Seed"},
+						{Event = "BuySeedStock", Arg = "Burning Bud"},
+						{Event = "BuySeedStock", Arg = "Sugar Apple"},
+						{Event = "BuySeedStock", Arg = "Ember Lily"},
+						{Event = "BuySeedStock", Arg = "Beanstalk"},
+					}
+
+					for _, item in pairs(items) do
+						pcall(function()
+							ReplicatedStorage.GameEvents[item.Event]:FireServer(item.Arg)
+						end)
+					end
+					task.wait(30)
+				end
+			end)
+		else
+			if thread then task.cancel(thread) end
+		end
+	end)
+end
+
+--// Create 5 Buttons
+createButton("TreeSubmit", 10, function()
+	local args = { [1] = "SubmitHeldPlant" }
+	game:GetService("ReplicatedStorage").GameEvents.ZenQuestRemoteEvent:FireServer(unpack(args))
+end)
+
+createButton("TreeSubmitAll", 50, function()
+	local args = { [1] = "SubmitAllPlants" }
+	game:GetService("ReplicatedStorage").GameEvents.ZenQuestRemoteEvent:FireServer(unpack(args))
+end)
+
+createButton("GetChi", 90, function()
+	local args = { [1] = "SubmitHeldPlant" }
+	game:GetService("ReplicatedStorage").GameEvents.ZenAuraRemoteEvent:FireServer(unpack(args))
+end)
+
+createButton("GetChi(ALL)", 130, function()
+	local args = { [1] = "SubmitAllPlants" }
+	game:GetService("ReplicatedStorage").GameEvents.ZenAuraRemoteEvent:FireServer(unpack(args))
+end)
+
+createButton("SubmitPetMutation", 170, function()
+	local args = { [1] = "SubmitHeldPet" }
+	game:GetService("ReplicatedStorage").GameEvents.PetMutationMachineService_RE:FireServer(unpack(args))
+end)
+
+--// Toggle
+createToggle(210)
+
+--// Credit Label
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, 0, 0, 25)
+credit.Position = UDim2.new(0, 0, 1, -25)
+credit.BackgroundTransparency = 1
+credit.Text = "Made By President 444 YT"
+credit.Font = Enum.Font.Gotham
+credit.TextSize = 12
+credit.TextColor3 = Color3.fromRGB(100, 100, 255)
+
+--// Particle Dots
+local particles = {}
+local dotCount = 20
+
+for i = 1, dotCount do
+	local dot = Instance.new("Frame", frame)
+	dot.Size = UDim2.new(0, 3, 0, 3)
+	dot.Position = UDim2.new(math.random(), 0, math.random(), 0)
+	dot.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+	dot.BorderSizePixel = 0
+	dot.BackgroundTransparency = 0.2
+
+	local corner = Instance.new("UICorner", dot)
+	corner.CornerRadius = UDim.new(1, 0)
+
+	table.insert(particles, {
+		instance = dot,
+		velocity = Vector2.new(math.random(-1, 1), math.random(-1, 1)) * 0.2
+	})
+end
+
+RunService.RenderStepped:Connect(function()
+	for _, dot in ipairs(particles) do
+		local inst = dot.instance
+		local pos = inst.Position
+		local vel = dot.velocity
+
+		local newX = pos.X.Scale + vel.X / 100
+		local newY = pos.Y.Scale + vel.Y / 100
+
+		if newX < 0 or newX > 1 then dot.velocity = Vector2.new(-vel.X, vel.Y) end
+		if newY < 0 or newY > 1 then dot.velocity = Vector2.new(vel.X, -vel.Y) end
+
+		inst.Position = UDim2.new(
+			math.clamp(newX, 0, 1),
+			0,
+			math.clamp(newY, 0, 1),
+			0
+		)
+	end
+end)
