@@ -1,4 +1,4 @@
--- 🔥 Slap Battles 🔥 — Rayfield UI with 4 buttons that print messages
+-- 🔥 Slap Battles 🔥 — Yes its open source you idiotic sense of nature gooner of skid
 
 -- Load Rayfield
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
