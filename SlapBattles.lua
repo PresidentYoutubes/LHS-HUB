@@ -98,8 +98,16 @@ end
 
 -- 3) 🔥 Auto Farm Killstreak ( You have to click manually) 🔥 — prints "yo"
 Main:CreateButton({
-    Name = "🔥 Auto Farm Killstreak ( You have to click manually) 🔥",
+    Name = "🔥 Auto Farm Killstreak ( You have to click manually)🔥",
     Callback = function()
+			local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+
+local gui = CoreGui:FindFirstChild("Killstreak") or Player.PlayerGui:FindFirstChild("Killstreak")
+if gui then
+    gui:Destroy()
+			end
         local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Player = Players.LocalPlayer
