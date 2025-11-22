@@ -32,9 +32,9 @@ end
 
 -- CREATE WINDOW
 local Window = Rayfield:CreateWindow({
-    Name = "Teleport & Farm",
+    Name = "Teleport & Farm | President 444 YT |",
     LoadingTitle = "Loading...",
-    LoadingSubtitle = "Sirius Rayfield",
+    LoadingSubtitle = "By President 444 YT",
 })
 
 local Main = Window:CreateTab("Main")
