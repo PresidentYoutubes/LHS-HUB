@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://github.com/PresidentYoutubes/LHS-HUB/blob/main/SaitamaLoader09.exe"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/PresidentYoutubes/LHS-HUB/refs/heads/main/SaitamaLoader09.exe"))()
