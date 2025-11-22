@@ -1,0 +1,178 @@
+-- LOAD SIRIUS RAYFIELD
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- VARIABLES
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+
+local targetVector = Vector3.new(0,5,0)
+local loopTP = false
+local diamondFarm = false
+local cratesFarm = false
+local loopInterval = 0.2
+
+-- TELEPORT FUNCTION
+local function teleportTo(vec)
+    local char = lp.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        hrp.CFrame = CFrame.new(vec)
+    end
+end
+
+-- VECTOR3 PARSER
+local function parseVector(str)
+    local x,y,z = str:match("(-?[%d%.]+)%s*,%s*(-?[%d%.]+)%s*,%s*(-?[%d%.]+)")
+    if x and y and z then
+        return Vector3.new(tonumber(x), tonumber(y), tonumber(z))
+    end
+    return nil
+end
+
+-- CREATE WINDOW
+local Window = Rayfield:CreateWindow({
+    Name = "Teleport & Farm",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "Sirius Rayfield",
+})
+
+local Main = Window:CreateTab("Main")
+
+-- VECTOR3 INPUT
+Main:CreateInput({
+    Name = "Target Vector3 (x, y, z)",
+    PlaceholderText = "10, 5, -20",
+    Callback = function(text)
+        local vec = parseVector(text)
+        if vec then
+            targetVector = vec
+            Rayfield:Notify("Vector Set", tostring(vec), 2)
+        else
+            Rayfield:Notify("Error", "Invalid Vector3 format", 2)
+        end
+    end,
+})
+
+-- TELEPORT BUTTON
+Main:CreateButton({
+    Name = "Teleport Once",
+    Callback = function()
+        teleportTo(targetVector)
+    end
+})
+
+-- LOOP TELEPORT TOGGLE
+Main:CreateToggle({
+    Name = "Loop Teleport",
+    CurrentValue = false,
+    Callback = function(state)
+        loopTP = state
+    end
+})
+
+-- DIAMOND FARM TOGGLE
+Main:CreateToggle({
+    Name = "Diamond Farm",
+    CurrentValue = false,
+    Callback = function(state)
+        diamondFarm = state
+    end
+})
+
+-- CRATES FARM TOGGLE
+Main:CreateToggle({
+    Name = "Crates Farm",
+    CurrentValue = false,
+    Callback = function(state)
+        cratesFarm = state
+    end
+})
+
+-- LOOP TELEPORT THREAD
+task.spawn(function()
+    while true do
+        if loopTP then
+            teleportTo(targetVector)
+        end
+        task.wait(loopInterval)
+    end
+end)
+
+-- DIAMOND FARM THREAD
+task.spawn(function()
+    while true do
+        if diamondFarm then
+            local folder = workspace:FindFirstChild("Diamonds")
+            if folder then
+                for _, d in ipairs(folder:GetChildren()) do
+                    if not diamondFarm then break end
+
+                    local pos = nil
+
+                    -- If it's a BasePart
+                    if d:IsA("BasePart") then
+                        pos = d.Position
+
+                    -- If it's a Model
+                    elseif d:IsA("Model") then
+                        if d.PrimaryPart then
+                            pos = d.PrimaryPart.Position
+                        else
+                            local first = d:FindFirstChildWhichIsA("BasePart", true)
+                            if first then
+                                pos = first.Position
+                            end
+                        end
+                    end
+
+                    if pos then
+                        teleportTo(pos)
+                    end
+
+                    task.wait(0.2)
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end)
+
+-- CRATES FARM THREAD
+task.spawn(function()
+    while true do
+        if cratesFarm then
+            local folder = workspace:FindFirstChild("Crates")
+            if folder then
+                for _, c in ipairs(folder:GetChildren()) do
+                    if not cratesFarm then break end
+
+                    local pos = nil
+
+                    -- If it's a BasePart
+                    if c:IsA("BasePart") then
+                        pos = c.Position
+
+                    -- If it's a Model
+                    elseif c:IsA("Model") then
+                        if c.PrimaryPart then
+                            pos = c.PrimaryPart.Position
+                        else
+                            local first = c:FindFirstChildWhichIsA("BasePart", true)
+                            if first then
+                                pos = first.Position
+                            end
+                        end
+                    end
+
+                    if pos then
+                        teleportTo(pos)
+                    end
+
+                    task.wait(0.2)
+                end
+            end
+        end
+        task.wait(0.1)
+    end
+end)
